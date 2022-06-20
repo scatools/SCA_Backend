@@ -1,16 +1,31 @@
 const express = require('express');
 const ExpressError = require('./expressError');
-const db = require('./db');
-const db_user = require('./db_user');
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const morgan = require('morgan');
-const SMAA_MCDA = require('./mcda');
+const path = require('path');
 const bcrypt = require('bcryptjs');
+const db = require('./db');
+const db_user = require('./db_user');
+const db_plan = require('./db_plan');
+const SMAA_MCDA = require('./mcda');
+const planRouter = require('./routes/plan');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(morgan('tiny'));
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+app.use('/plan', planRouter);
 
 app.post('/data', async function(req, res, next) {
 	try {

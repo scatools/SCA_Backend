@@ -13,11 +13,16 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
+    "dotenv": "^16.0.1",
     "express": "^4.17.1",
+    "jade": "^1.11.0",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.6",
-    "pg": "^8.3.3"
+    "pg": "^8.3.3",
+    "pg-promise": "^10.11.1",
+    "split": "^1.0.1"
   }
 }
