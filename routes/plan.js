@@ -28,7 +28,7 @@ const stateHash = {
 	SE: `related_state = 'SE'`
 };
 
-router.get('/spatial', async function(req, res, next) {
+router.get('/spatial/point', async function(req, res, next) {
 	try {
 		const filterConfig = {
 			state: stateHash[String(req.query.state)] || '1=1',
@@ -44,6 +44,49 @@ router.get('/spatial', async function(req, res, next) {
 		const spatialQueryResults = await db_plan.query(
 			`SELECT name FROM spatial WHERE ST_Intersects(ST_GeomFromGeoJSON(ST_AsGeoJSON(geom)), ST_GeomFromGeoJSON('${spatialPointInput}'))`
 		);
+		
+		const filteredSpatialQueryResultsString = spatialQueryResults.rows.map((row) => `'${row.name === "SE" ? "Regional" : row.name}'`).join(' , ');
+
+		if (filteredSpatialQueryResultsString) {
+			const results = await db_plan.query(
+				`SELECT plan_name, id, related_state FROM plans WHERE (${filterConfig.state}) AND (${filterConfig.time}) AND (${filterConfig.priority}) AND (geo_extent IN (${filteredSpatialQueryResultsString}));`
+			);
+			return res.json({
+				totalRowCount: results.rowCount || 0,
+				data:
+					results.rows.filter(
+						(ele, index) => index >= Number(req.query.start) && index < Number(req.query.end)
+					) || []
+			});
+		} else {
+			return res.json({
+				totalRowCount: 0,
+				data: []
+			});
+		}
+	} catch (e) {
+		console.log(e);
+		next(e);
+	}
+});
+
+router.get('/spatial/polygon', async function(req, res, next) {
+	try {
+		const filterConfig = {
+			state: stateHash[String(req.query.state)] || '1=1',
+			time: timeframeHash[String(req.query.time)] || '1=1',
+			priority: priorityHash[String(req.query.priority)] || '1=1'
+		};
+
+		const spatialPolygonInput = JSON.stringify({
+			type: "MultiPolygon",
+			coordinates: JSON.parse(req.query.coordinates)
+		});
+
+		const spatialQueryResults = await db_plan.query(
+			`SELECT name FROM spatial WHERE ST_Intersects(ST_GeomFromGeoJSON(ST_AsGeoJSON(geom)), ST_GeomFromGeoJSON('${spatialPolygonInput}'))`
+		);
+		
 		const filteredSpatialQueryResultsString = spatialQueryResults.rows.map((row) => `'${row.name === "SE" ? "Regional" : row.name}'`).join(' , ');
 
 		if (filteredSpatialQueryResultsString) {
