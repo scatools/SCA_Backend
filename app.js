@@ -93,6 +93,33 @@ app.get('/report', async function(req, res, next){
 	}
 })
 
+app.post('/getMeasures', async function(req, res, next){
+	try{
+		const weights = await db_user.query( `SELECT weight FROM public.user_weight WHERE username = $1`,
+		[req.body.username]
+		);
+		res.json(weights.rows[0].weight)
+	} catch(e) {
+		next(e);
+	}
+})
+
+app.post('/updateMeasures', async function(req, res, next){
+	try{
+		const result = await db_user.query(
+			`UPDATE user_weight SET weight = $2 WHERE username = $1;`,
+			[
+				req.body.username,
+				req.body.weights
+			]
+		);
+		return res.json(result);
+	} catch(e) {
+		next(e);
+	}
+})
+
+
 // Three user-related endpoints: get & post & delete
 
 app.post('/register', async function(req, res, next){
