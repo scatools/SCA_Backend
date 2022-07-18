@@ -207,6 +207,20 @@ app.post('/user/report', async function(req, res, next){
 	}
 });
 
+app.post('/user/plan', async function(req, res, next){
+	try{
+		const result = await db_plan.query(
+			`SELECT plan_id
+			FROM likes
+			WHERE user_username = $1`,
+			[req.body.username]
+		);
+		return res.json(result);
+	} catch(e) {
+		next(e);
+	}
+});
+
 app.post('/update/information', async function(req, res, next){
 	try{
 		const result = await db_user.query(
@@ -297,6 +311,31 @@ app.post('/save/report', async function(req, res, next){
 	}
 });
 
+app.post('/save/plan', async function(req, res, next){
+	try{
+		const maxID = await db_plan.query(
+			`SELECT MAX(id) AS max_id
+			FROM likes`
+		);
+		var new_id = 1;
+		if (maxID.rows[0].max_id) {
+			new_id = maxID.rows[0].max_id + 1;
+		}
+		const result = await db_plan.query(
+			`INSERT INTO likes(id, user_username, plan_id)
+			VALUES ($1, $2, $3)`,
+			[
+				new_id,
+				req.body.username,
+				req.body.plan_id
+			]
+		);
+		return res.json(result);
+	} catch(e) {
+		next(e);
+	}
+});
+
 app.post('/delete/shapefile', async function(req, res, next){
 	try{
 		const result = await db_user.query(
@@ -316,6 +355,19 @@ app.post('/delete/report', async function(req, res, next){
 			`DELETE FROM user_report
 			WHERE report_name = $1`,
 			[ req.body.report_name ]
+		);
+		return res.json(result);
+	} catch(e) {
+		next(e);
+	}
+});
+
+app.post('/delete/plan', async function(req, res, next){
+	try{
+		const result = await db_plan.query(
+			`DELETE FROM likes
+			WHERE user_username = $1 AND plan_id = $2`,
+			[ req.body.username, req.body.plan_id ]
 		);
 		return res.json(result);
 	} catch(e) {
