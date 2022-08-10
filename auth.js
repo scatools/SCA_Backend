@@ -76,29 +76,28 @@ exports.disableAccount = async (uid) => {
     }
 }
 
-// exports.importUser = async (email, password, uid) => {
-//     // console.log('s')
-//     try {
-//     const results = await defaultAuth.importUsers(
-//             [
-//               {
-//                 uid:uid,
-//                 email: email,
-//                 // Must be provided in a byte buffer.
-//                 passwordHash: Buffer.from(password),
-//               },
-//             ],
-//             {
-//               hash: {
-//                 algorithm: 'BCRYPT',
-//               },
-//             }
-//           )
-//             console.log(results.errors[0].error)
-//         results.errors.forEach((indexedError) => {
-//             return `Error importing user ${indexedError.index}`;
-//         });
-//     } catch (error) {
-//         return 'Error importing users :', error ;
-//     }
-// }
+exports.importUser = async (email, password, uid) => {
+    try {
+        const results = await defaultAuth.importUsers(
+            [
+              {
+                uid:uid,
+                email: email,
+                // Must be provided in a byte buffer.
+                passwordHash: Buffer.from(password),
+              },
+            ],
+            {
+              hash: {
+                algorithm: 'BCRYPT',
+              },
+            }
+          )
+            console.log(results.errors[0].error)
+        results.errors.forEach((indexedError) => {
+            return `Error importing user ${indexedError.index}`;
+        });
+    } catch (error) {
+        return 'Error importing users :', error ;
+    }
+}

@@ -24,6 +24,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/plan', planRouter);
 
+/* Spatial Endpoints */
+
 app.post('/data', async function(req, res, next) {
 	try {
 		// Set 4326 as the SRID for both geometries to avoid operations on mixed projections
@@ -77,6 +79,8 @@ app.post('/data', async function(req, res, next) {
 	}
 });
 
+/* Report Endpoints */
+
 app.post('/mcda', async function(req, res, next) {
 	try {
 		const Init_mean = req.body.mean;
@@ -94,36 +98,9 @@ app.get('/report', async function(req, res, next){
 	} catch(e) {
 		next(e);
 	}
-})
+});
 
-app.post('/getMeasures', async function(req, res, next){
-	try{
-		const weights = await db_user.query( `SELECT weight FROM public.user_weight WHERE username = $1`,
-		[req.body.username]
-		);
-		res.json(weights.rows[0].weight)
-	} catch(e) {
-		next(e);
-	}
-})
-
-app.post('/updateMeasures', async function(req, res, next){
-	try{
-		const result = await db_user.query(
-			`UPDATE user_weight SET weight = $2 WHERE username = $1;`,
-			[
-				req.body.username,
-				req.body.weights
-			]
-		);
-		return res.json(result);
-	} catch(e) {
-		next(e);
-	}
-})
-
-
-// Three user-related endpoints: get & post & delete
+/* User Endpoints */
 
 app.post('/register', async function(req, res, next){
 	try{
@@ -166,7 +143,7 @@ app.post('/register', async function(req, res, next){
 	} catch(e) {
 		next(e);
 	}
-})
+});
 
 app.post('/login', async function(req, res, next){
 	// Get email from username
@@ -191,8 +168,7 @@ app.post('/login', async function(req, res, next){
 	} catch(e) {
 		next(e);
 	}
-})
-
+});
 
 app.post('/getUser', async function(req, res, next){
 	try{
@@ -213,40 +189,21 @@ app.post('/getUser', async function(req, res, next){
 	} catch(e) {
 		next(e);
 	}
-})
+});
 
-
-// app.get('/importUsers', async function(req, res, next){
-// 	try{
-// 		const result = await db_user.query(
-// 			`SELECT *
-// 			FROM users WHERE username = 'damiono32'`
-// 		);
-// 		const arr = ['d1e546316ef141b7ae45e3a1b52a6b01']
-// 		var total = 0
-// 		for(let val of result.rows){
-// 			await auth.importUser(val.email, val.password, arr[total])
-// 			await db_user.query(
-// 				`INSERT INTO user_new(username, first_name, last_name, is_admin, uid, email)
-// 				VALUES ($1, $2, $3, $4, $5, $6)`,
-// 				[
-// 					val.username,
-// 					val.first_name,
-// 					val.last_name,
-// 					val.is_admin,
-// 					arr[total],
-// 					val.email
-// 				]
-// 			)
-// 			total += 1;
-// 		}
-		
-// 		res.send(error)
-// 	} catch(e) {
-// 		next(e);
-// 	}
-// })
-
+app.get('/importUsers', async function(req, res, next){
+	try{
+		const result = await db_user.query(
+			`SELECT * FROM user_new`
+		);
+		for(let val of result.rows){
+			await auth.importUser(val.email, val.password, val.uid);
+		};
+		res.send(error);
+	} catch(e) {
+		next(e);
+	}
+});
 
 app.post('/user', async function(req, res, next){
 	try{
@@ -260,7 +217,7 @@ app.post('/user', async function(req, res, next){
 	} catch(e) {
 		next(e);
 	}
-})
+});
 
 app.post('/user/shapefile', async function(req, res, next){
 	try{
@@ -366,7 +323,6 @@ app.post('/update/password', async function(req, res, next){
 		next(e);
 	}
 });
-
 
 app.post('/update/disable', async function(req, res, next){
 	try{
@@ -504,7 +460,33 @@ app.post('/delete/plan', async function(req, res, next){
 	}
 });
 
-/** general error handler */
+app.post('/getMeasures', async function(req, res, next){
+	try{
+		const weights = await db_user.query( `SELECT weight FROM public.user_weight WHERE username = $1`,
+		[req.body.username]
+		);
+		res.json(weights.rows[0].weight)
+	} catch(e) {
+		next(e);
+	}
+});
+
+app.post('/updateMeasures', async function(req, res, next){
+	try{
+		const result = await db_user.query(
+			`UPDATE user_weight SET weight = $2 WHERE username = $1;`,
+			[
+				req.body.username,
+				req.body.weights
+			]
+		);
+		return res.json(result);
+	} catch(e) {
+		next(e);
+	}
+});
+
+/* General Error Handler */
 
 app.use(function(req, res, next) {
 	const err = new ExpressError('Not Found', 404);
