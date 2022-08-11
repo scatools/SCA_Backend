@@ -16,21 +16,13 @@ const email_validation = require("email-validator");
 
 const app = express();
 
+app.use(cors({credentials: true, origin: true}));
 app.use(express.json());
 app.use(morgan('tiny'));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/plan', planRouter);
-
-// CORS policy
-app.use(function(req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "https://sca-tool-suite.herokuapp.com");
-	res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-	res.setHeader("Access-Control-Allow-Credentials", true);
-  next();
-});
 
 /* Spatial Endpoints */
 
