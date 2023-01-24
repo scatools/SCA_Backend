@@ -49,7 +49,7 @@ router.get('/spatial/point', async function(req, res, next) {
 
 		if (filteredSpatialQueryResultsString) {
 			const results = await db_plan.query(
-				`SELECT plan_name, id, related_state FROM plans WHERE (${filterConfig.state}) AND (${filterConfig.time}) AND (${filterConfig.priority}) AND (geo_extent IN (${filteredSpatialQueryResultsString}));`
+				`SELECT plan_name, id, related_state, agency_lead, planning_method, plan_timeframe, plan_url FROM plans WHERE (${filterConfig.state}) AND (${filterConfig.time}) AND (${filterConfig.priority}) AND (geo_extent IN (${filteredSpatialQueryResultsString}));`
 			);
 			return res.json({
 				totalRowCount: results.rowCount || 0,
@@ -91,7 +91,7 @@ router.get('/spatial/polygon', async function(req, res, next) {
 
 		if (filteredSpatialQueryResultsString) {
 			const results = await db_plan.query(
-				`SELECT plan_name, id, related_state FROM plans WHERE (${filterConfig.state}) AND (${filterConfig.time}) AND (${filterConfig.priority}) AND (geo_extent IN (${filteredSpatialQueryResultsString}));`
+				`SELECT plan_name, id, related_state, agency_lead, planning_method, plan_timeframe, plan_url FROM plans WHERE (${filterConfig.state}) AND (${filterConfig.time}) AND (${filterConfig.priority}) AND (geo_extent IN (${filteredSpatialQueryResultsString}));`
 			);
 			return res.json({
 				totalRowCount: results.rowCount || 0,
@@ -132,7 +132,7 @@ router.get('/', async function(req, res, next) {
 		};
 
 		const results = await db_plan.query(
-			`SELECT plan_name, id, plan_url, plan_timeframe, planning_method, agency_lead FROM plans WHERE (${filterConfig.state}) AND (${filterConfig.time}) AND (${filterConfig.priority});`
+			`SELECT plan_name, id, related_state, agency_lead, planning_method, plan_timeframe, plan_url FROM plans WHERE (${filterConfig.state}) AND (${filterConfig.time}) AND (${filterConfig.priority});`
 		);
 		return res.json({
 			totalRowCount: results.rowCount || 0,
