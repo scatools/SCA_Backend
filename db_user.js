@@ -18,9 +18,9 @@ var db_user = new Client({
   // For more details, refer to https://devcenter.heroku.com/articles/config-vars
   user: process.env.USERDB_USER,
   password: process.env.USERDB_PASSWORD,
-  database: "dfnn4oo2hfqh8e",
+  database: "dinf5orh0eclu",
   port: 5432,
-  host: "ec2-44-207-126-176.compute-1.amazonaws.com",
+  host: "ec2-35-169-9-79.compute-1.amazonaws.com",
   ssl: { rejectUnauthorized: false }
 }); 
 
