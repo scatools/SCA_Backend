@@ -18,7 +18,7 @@ const { Client } = require("pg");
 
 // Need to specify ssl attribute
 let db_plan = new Client({
-  connectionString: process.env.HEROKU_POSTGRESQL_CHARCOAL_URL,
+  connectionString: process.env.HEROKU_POSTGRESQL_OLIVE,
   ssl: { rejectUnauthorized: false }
 });
 
