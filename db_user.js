@@ -13,16 +13,10 @@ const { Client } = require("pg");
 // For production on Heroku
 
 // Need to specify ssl attribute
-var db_user = new Client({
-  // Need to set these config variables beforehand in Heroku environment settings
-  // For more details, refer to https://devcenter.heroku.com/articles/config-vars
-  user: process.env.USERDB_USER,
-  password: process.env.USERDB_PASSWORD,
-  database: "dinf5orh0eclu",
-  port: 5432,
-  host: "ec2-35-169-9-79.compute-1.amazonaws.com",
+let db_user = new Client({
+  connectionString: process.env.HEROKU_POSTGRESQL_PUCE_URL,
   ssl: { rejectUnauthorized: false }
-}); 
+});
 
 db_user.connect();
 
